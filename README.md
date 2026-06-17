@@ -11,9 +11,40 @@
 
 ## 📸 产品截图
 
+### 主界面 · AI 对话
 ![Bony Agent 主界面](docs/screenshot-main.png)
 
 > **Bony** — 让一个人做得更多。从想法到交付，一个人也能运行一整个制作团队。描述你的想法，Bony 的 Agent 团队会帮你完成剩下的工作。
+
+### AI 伙伴
+![AI 伙伴](docs/screenshot-companion.png)
+
+> 可交互数字人 Companion，支持语音对话，随时待命。
+
+### 工作台
+![工作台](docs/screenshot-workbench.png)
+
+> 全链路内容生产工具集：内容创作 · 媒体生产 · 发布运营 · 数据洞察 · 创意软件，一站直达。
+
+### 实验与工具 · 专业 Agent Labs
+![实验与工具](docs/screenshot-labs.png)
+
+> 27+ 专业 Agent：AI 客服、产品经理、法律顾问、广告投放、商务合作、采购助手、游戏美术/策划、程序员等。
+
+### 可视化工作流
+![可视化工作流](docs/screenshot-workflow.png)
+
+> 拖拽式 Agent 编排，热点触发 → 内容生成 → 多平台分发全流程自动化。
+
+### MCP 能力配置
+![MCP 能力配置](docs/screenshot-mcp.png)
+
+> 一键安装 DuckDuckGo 搜索、Playwright 浏览器、Filesystem、Memory 等常用 MCP 工具服务器。
+
+### 聊天平台接入
+![聊天平台接入](docs/screenshot-platform.png)
+
+> 飞书 / Lark · Discord 双平台接入，机器人事件驱动，无缝触达团队协作场景。
 
 ---
 

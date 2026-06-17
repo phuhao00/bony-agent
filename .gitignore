@@ -57,6 +57,12 @@ generated_outputs/*.mp4
 !electron/assets/logo.png
 !electron/resources/web-standalone/public/brand-logo.png
 !docs/screenshot-main.png
+!docs/screenshot-companion.png
+!docs/screenshot-workbench.png
+!docs/screenshot-labs.png
+!docs/screenshot-workflow.png
+!docs/screenshot-mcp.png
+!docs/screenshot-platform.png
 electron/resources/python/*.tar.gz
 electron/resources/node/
 electron/resources/pip-wheels-win/
