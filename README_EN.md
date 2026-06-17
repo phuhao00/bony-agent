@@ -108,6 +108,14 @@ The easiest way — no environment setup required, download and run:
 
 4. If macOS shows "Unable to verify developer", go to **System Settings → Privacy & Security** and click **Open Anyway**
 
+5. On first launch, the app initializes local services and connects to Cloudflare Tunnel automatically:
+
+   ![Launching](docs/screenshot-mac-launching.png)
+
+6. Once all services are ready, click the **"就绪 (Ready)"** button to enter the main interface:
+
+   ![Running](docs/screenshot-mac-running.png)
+
 > **Tip**: On macOS 14 Sonoma or later, you can run `xattr -cr /Applications/"AI Media Agent.app"` in Terminal to remove the quarantine attribute before launching.
 
 ---

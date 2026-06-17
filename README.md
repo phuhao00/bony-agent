@@ -108,6 +108,14 @@
 
 4. 首次启动时如提示「无法验证开发者」，请前往 **系统设置 → 隐私与安全性**，点击「仍要打开」
 
+5. 启动后会看到初始化界面，应用自动启动本地服务并连接 Cloudflare Tunnel：
+
+   ![启动中](docs/screenshot-mac-launching.png)
+
+6. 服务就绪后点击「**就绪**」按钮，即可进入主界面开始使用：
+
+   ![运行中](docs/screenshot-mac-running.png)
+
 > **提示**：macOS 14 Sonoma 及以上建议直接从终端运行 `xattr -cr /Applications/"AI Media Agent.app"` 解除隔离属性，再双击启动。
 
 ---
