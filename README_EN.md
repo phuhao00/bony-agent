@@ -91,6 +91,24 @@
 
 > Desktop installer (v1.0.36 DMG / ZIP): [`docs/INSTALLATION.md`](docs/INSTALLATION.md)
 
+### 🍎 macOS Desktop App Installation (Recommended)
+
+The easiest way — no environment setup required, download and run:
+
+1. Go to the [Releases](https://github.com/phuhao00/bony-agent/releases) page and download the latest `.dmg` file
+2. Open the DMG and drag the **AI Media Agent** icon into the **Applications** folder
+
+   ![Mac Installation](docs/screenshot-mac-install.png)
+
+3. Find **AI Media Agent** in your Applications folder and double-click to launch
+4. If macOS shows "Unable to verify developer", go to **System Settings → Privacy & Security** and click **Open Anyway**
+
+> **Tip**: On macOS 14 Sonoma or later, you can run `xattr -cr /Applications/"AI Media Agent.app"` in Terminal to remove the quarantine attribute before launching.
+
+---
+
+### 💻 Source Code (Developer Mode)
+
 ### Prerequisites
 
 - **Node.js** 18+ (20 recommended)

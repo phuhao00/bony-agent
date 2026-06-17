@@ -91,6 +91,24 @@
 
 > 桌面安装包说明（v1.0.36 DMG / ZIP）：[`docs/INSTALLATION.md`](docs/INSTALLATION.md)
 
+### 🍎 macOS 桌面应用安装（推荐）
+
+最简单的方式——无需配置环境，下载即用：
+
+1. 前往 [Releases](https://github.com/phuhao00/bony-agent/releases) 页面，下载最新版 `.dmg` 文件
+2. 双击打开 DMG，将 **AI Media Agent** 图标拖入 **Applications（应用程序）** 文件夹
+
+   ![Mac 安装步骤](docs/screenshot-mac-install.png)
+
+3. 在「应用程序」中找到 **AI Media Agent**，双击启动
+4. 首次启动时如提示「无法验证开发者」，请前往 **系统设置 → 隐私与安全性**，点击「仍要打开」
+
+> **提示**：macOS 14 Sonoma 及以上建议直接从终端运行 `xattr -cr /Applications/"AI Media Agent.app"` 解除隔离属性，再双击启动。
+
+---
+
+### 💻 源码启动（开发者模式）
+
 ### 环境要求
 
 - **Node.js** 18+（推荐 20）
