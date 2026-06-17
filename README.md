@@ -101,6 +101,11 @@
    ![Mac 安装步骤](docs/screenshot-mac-install.png)
 
 3. 在「应用程序」中找到 **AI Media Agent**，双击启动
+
+   安装完成后应用图标如下所示：
+
+   ![安装完成](docs/screenshot-mac-installed.png)
+
 4. 首次启动时如提示「无法验证开发者」，请前往 **系统设置 → 隐私与安全性**，点击「仍要打开」
 
 > **提示**：macOS 14 Sonoma 及以上建议直接从终端运行 `xattr -cr /Applications/"AI Media Agent.app"` 解除隔离属性，再双击启动。

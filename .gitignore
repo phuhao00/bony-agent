@@ -65,6 +65,7 @@ generated_outputs/*.mp4
 !docs/screenshot-platform.png
 !docs/screenshot-customer-service.png
 !docs/screenshot-mac-install.png
+!docs/screenshot-mac-installed.png
 electron/resources/python/*.tar.gz
 electron/resources/node/
 electron/resources/pip-wheels-win/

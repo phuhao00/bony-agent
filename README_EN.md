@@ -101,6 +101,11 @@ The easiest way — no environment setup required, download and run:
    ![Mac Installation](docs/screenshot-mac-install.png)
 
 3. Find **AI Media Agent** in your Applications folder and double-click to launch
+
+   After installation, the app icon should look like this:
+
+   ![Installed](docs/screenshot-mac-installed.png)
+
 4. If macOS shows "Unable to verify developer", go to **System Settings → Privacy & Security** and click **Open Anyway**
 
 > **Tip**: On macOS 14 Sonoma or later, you can run `xattr -cr /Applications/"AI Media Agent.app"` in Terminal to remove the quarantine attribute before launching.
