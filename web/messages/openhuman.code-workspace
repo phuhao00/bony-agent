@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../../../Downloads/openhuman"
+		},
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../Downloads/hermes-agent"
+		},
+		{
+			"path": "../../../../Downloads/taste-skill"
+		},
+		{
+			"path": "../../../../Downloads/codegraph"
+		}
+	],
+	"settings": {}
+}

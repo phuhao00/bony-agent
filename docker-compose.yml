@@ -1,0 +1,101 @@
+services:
+  backend:
+    build: ./backend
+    container_name: ai-agent-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./storage:/app/../storage
+      - ./logs:/app/../logs
+    restart: unless-stopped
+    depends_on:
+      ocr_service:
+        condition: service_healthy
+      parser_service:
+        condition: service_healthy
+      directory_service:
+        condition: service_healthy
+    environment:
+      - OCR_SERVICE_ADDR=ocr_service:50051
+      - PARSER_SERVICE_ADDR=parser_service:50052
+      - DIRECTORY_SERVICE_ADDR=directory_service:50053
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./web
+      args:
+        - BACKEND_URL=http://backend:8000
+    container_name: ai-agent-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  ocr_service:
+    build: ./services/ocr
+    container_name: ai-agent-ocr
+    ports:
+      - "50051:50051"
+    environment:
+      - OCR_PORT=50051
+      - OCR_WORKERS=4
+      - USE_GPU=0
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import grpc; ch = grpc.insecure_channel('localhost:50051'); grpc.channel_ready_future(ch).result(timeout=5)",
+        ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+
+  parser_service:
+    build: ./backend_safety
+    container_name: ai-agent-parser
+    ports:
+      - "50052:50052"
+    environment:
+      - PARSER_PORT=50052
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50052"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  directory_service:
+    build: ./backend_massive_concurrent
+    container_name: ai-agent-directory
+    ports:
+      - "50053:50053"
+    environment:
+      - DIRECTORY_PORT=50053
+    volumes:
+      - ./storage:/app/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50053"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 15s

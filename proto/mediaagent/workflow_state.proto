@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package mediaagent;
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+
+// ── WorkflowStateService: Rust 原子持久化 + 凭证加密 ─────────────────
+// 负责工作流定义和运行状态的 crash-safe 存储，以及节点凭证的加密/解密
+
+service WorkflowStateService {
+  // 工作流定义 CRUD
+  rpc SaveWorkflow(SaveWorkflowRequest) returns (SaveAck);
+  rpc LoadWorkflow(LoadWorkflowRequest) returns (LoadWorkflowResponse);
+  rpc DeleteWorkflow(DeleteWorkflowRequest) returns (DeleteAck);
+  rpc ListWorkflows(ListWorkflowsRequest) returns (stream WorkflowSummary);
+
+  // 运行状态持久化（记录每次执行）
+  rpc SaveRunState(SaveRunStateRequest) returns (SaveAck);
+  rpc LoadRunState(LoadRunStateRequest) returns (LoadRunStateResponse);
+  rpc ListRunStates(ListRunStatesRequest) returns (stream RunStateSummary);
+
+  // 节点凭证加密（存储 API key 等敏感配置）
+  rpc EncryptNodeConfig(EncryptRequest) returns (EncryptResponse);
+  rpc DecryptNodeConfig(DecryptRequest) returns (DecryptResponse);
+}
+
+// ── 工作流定义存储 ────────────────────────────────────────────────
+
+message SaveWorkflowRequest {
+  string id          = 1;
+  string payload_json = 2;  // WorkflowDef 序列化 JSON
+}
+
+message SaveAck {
+  bool   success = 1;
+  string path    = 2;  // 实际写入路径（调试用）
+}
+
+message LoadWorkflowRequest {
+  string id = 1;
+}
+
+message LoadWorkflowResponse {
+  bool   found        = 1;
+  string payload_json = 2;
+}
+
+message DeleteWorkflowRequest {
+  string id = 1;
+}
+
+message DeleteAck {
+  bool   success = 1;
+  string message = 2;
+}
+
+message ListWorkflowsRequest {
+  // 预留：可加 page_size / cursor
+}
+
+message WorkflowSummary {
+  string id          = 1;
+  string name        = 2;
+  string description = 3;
+  int64  created_at  = 4;  // Unix timestamp seconds
+  int64  updated_at  = 5;
+  int32  node_count  = 6;
+}
+
+// ── 运行状态存储 ─────────────────────────────────────────────────
+
+message SaveRunStateRequest {
+  string run_id      = 1;
+  string workflow_id = 2;
+  string payload_json = 3;  // WorkflowRunRecord 序列化 JSON
+}
+
+message LoadRunStateRequest {
+  string run_id = 1;
+}
+
+message LoadRunStateResponse {
+  bool   found        = 1;
+  string payload_json = 2;
+}
+
+message ListRunStatesRequest {
+  string workflow_id = 1;  // 按工作流过滤
+  int32  limit       = 2;  // 0 = 不限
+}
+
+message RunStateSummary {
+  string run_id      = 1;
+  string workflow_id = 2;
+  string status      = 3;
+  int64  started_at  = 4;
+  int64  finished_at = 5;
+}
+
+// ── 凭证加密 ────────────────────────────────────────────────────
+
+message EncryptRequest {
+  string plaintext = 1;  // 节点配置中的敏感字段（序列化 JSON）
+}
+
+message EncryptResponse {
+  string ciphertext = 1;  // base64(nonce + ciphertext)，可安全存入 JSON
+}
+
+message DecryptRequest {
+  string ciphertext = 1;
+}
+
+message DecryptResponse {
+  string plaintext = 1;
+}

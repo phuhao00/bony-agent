@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package mediaagent;
+
+import "mediaagent/common.proto";
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+
+// ── 请求 ──────────────────────────────────────────────────
+message OCRRequest {
+  oneof source {
+    bytes  image_data = 1;  // 原始图片字节（< 20 MB 时内联传输）
+    string image_path = 2;  // 服务端可访问的本地路径（大文件推荐）
+  }
+  repeated string languages = 3;  // ["ch_sim", "en"] 等 ISO 语言代码
+  bool            detect_tables    = 4;  // 是否识别表格结构
+  bool            detect_layout    = 5;  // 是否保留版面布局顺序
+  string          request_id       = 6;  // 幂等追踪 ID
+}
+
+// ── 响应 ──────────────────────────────────────────────────
+message OCRResponse {
+  string              request_id  = 1;
+  string              full_text   = 2;  // 所有块拼接后的纯文本
+  repeated TextBlock  blocks      = 3;  // 带坐标的细粒度块
+  repeated TableData  tables      = 4;  // 识别到的表格（需 detect_tables=true）
+  float               avg_confidence = 5;
+  string              detected_language = 6;  // 主语言
+  TaskStatus          status      = 7;
+  Error               error       = 8;
+  int64               latency_ms  = 9;
+}
+
+// ── 批量请求（客户端流式）────────────────────────────────────
+message OCRBatchRequest {
+  OCRRequest  request     = 1;
+  int32       batch_index = 2;
+}
+
+message OCRBatchResponse {
+  OCRResponse response    = 1;
+  int32       batch_index = 2;
+}
+
+// ── 服务定义 ──────────────────────────────────────────────
+service OCRService {
+  // 单张图片 OCR（同步）
+  rpc ExtractText (OCRRequest) returns (OCRResponse);
+
+  // 批量 OCR（双向流式）
+  rpc ExtractBatch (stream OCRBatchRequest) returns (stream OCRBatchResponse);
+}

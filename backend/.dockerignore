@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+.venv
+venv
+.git
+*.log
+memory_storage
+storage

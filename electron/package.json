@@ -1,0 +1,141 @@
+{
+    "name": "ai-media-agent",
+    "version": "1.0.41",
+    "description": "AI Media Agent – Full-chain Content Production & Distribution Platform",
+    "author": "AI Media Agent",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder --mac",
+        "build:arm64": "electron-builder --mac --arm64",
+        "build:x64": "electron-builder --mac --x64",
+        "build:universal": "electron-builder --mac --universal",
+        "build:unsigned": "CSC_IDENTITY_AUTO_DISCOVERY=false MAC_BUILD_UNSIGNED=1 electron-builder --mac --config.mac.identity=null --config.mac.hardenedRuntime=true --config.mac.gatekeeperAssess=false",
+        "build:unsigned:arm64": "CSC_IDENTITY_AUTO_DISCOVERY=false MAC_BUILD_UNSIGNED=1 electron-builder --mac --arm64 --config.mac.identity=null --config.mac.hardenedRuntime=true --config.mac.gatekeeperAssess=false",
+        "build:unsigned:x64": "CSC_IDENTITY_AUTO_DISCOVERY=false MAC_BUILD_UNSIGNED=1 electron-builder --mac --x64 --config.mac.identity=null --config.mac.hardenedRuntime=true --config.mac.gatekeeperAssess=false",
+        "build:unsigned:universal": "CSC_IDENTITY_AUTO_DISCOVERY=false MAC_BUILD_UNSIGNED=1 electron-builder --mac --universal --config.mac.identity=null --config.mac.hardenedRuntime=true --config.mac.gatekeeperAssess=false",
+        "build:win": "electron-builder --win --x64",
+        "build:win:portable": "electron-builder --win --x64 --config.win.target=portable",
+        "build:win:zip": "electron-builder --win --x64 --config.win.target=zip"
+    },
+    "devDependencies": {
+        "@electron/notarize": "^2.5.0",
+        "electron": "^32.2.0",
+        "electron-builder": "^25.1.8"
+    },
+    "build": {
+        "appId": "com.conflux.farm",
+        "productName": "AI Media Agent",
+        "copyright": "Copyright © 2025 AI Media Agent",
+        "afterPack": "scripts/afterPack.js",
+        "afterSign": "scripts/notarize.js",
+        "directories": {
+            "output": "dist",
+            "buildResources": "resources"
+        },
+        "files": [
+            "main.js",
+            "preload.js",
+            "renderer/**/*",
+            "!resources/**"
+        ],
+        "asarUnpack": [
+            "renderer/**/*"
+        ],
+        "extraResources": [
+            {
+                "from": "resources/",
+                "to": "resources/",
+                "filter": [
+                    "**/*",
+                    "!**/.DS_Store",
+                    "!Install AI Media Agent.app/**"
+                ]
+            }
+        ],
+        "mac": {
+            "category": "public.app-category.productivity",
+            "icon": "resources/icons/icon.icns",
+            "target": [
+                {
+                    "target": "dmg",
+                    "arch": [
+                        "arm64"
+                    ]
+                }
+            ],
+            "identity": null,
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "entitlements": "resources/entitlements.mac.plist",
+            "entitlementsInherit": "resources/entitlements.mac.helper.plist"
+        },
+        "dmg": {
+            "title": "AI Media Agent ${version}",
+            "background": "assets/dmg-background.png",
+            "window": {
+                "width": 540,
+                "height": 380
+            },
+            "contents": [
+                {
+                    "x": 140,
+                    "y": 200,
+                    "type": "file"
+                },
+                {
+                    "x": 400,
+                    "y": 200,
+                    "type": "link",
+                    "path": "/Applications"
+                },
+                {
+                    "x": 270,
+                    "y": 310,
+                    "type": "file",
+                    "path": "resources/Install AI Media Agent.app"
+                },
+                {
+                    "x": 270,
+                    "y": 80,
+                    "type": "file",
+                    "path": "resources/安装说明.txt"
+                },
+                {
+                    "x": 400,
+                    "y": 310,
+                    "type": "file",
+                    "path": "resources/dmg-install.sh"
+                }
+            ]
+        },
+        "win": {
+            "icon": "resources/icons/icon.ico",
+            "target": [
+                {
+                    "target": "zip",
+                    "arch": [
+                        "x64"
+                    ]
+                },
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "requestedExecutionLevel": "asInvoker"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "installerIcon": "resources/icons/icon.ico",
+            "uninstallerIcon": "resources/icons/icon.ico",
+            "installerHeaderIcon": "resources/icons/icon.ico",
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "AI Media Agent"
+        }
+    }
+}

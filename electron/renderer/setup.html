@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Media Agent – 安装向导</title>
+    <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+    <div class="titlebar">
+        <h1>AI Media Agent · 安装向导</h1>
+    </div>
+    <div class="content">
+    <div class="steps" id="steps">
+        <div class="step-dot" data-step="0"></div>
+        <div class="step-dot" data-step="1"></div>
+        <div class="step-dot" data-step="2"></div>
+        <div class="step-dot" data-step="3"></div>
+    </div>
+
+    <!-- Step 0: Welcome -->
+    <div class="panel active" id="panel-welcome">
+        <div class="logo">🚀</div>
+        <h1>欢迎使用 AI Media Agent</h1>
+        <p class="subtitle">首次使用将自动完成环境安装，无需手动配置 Python 或 Node.js。</p>
+        <div class="checklist">
+            <div class="check-item platform-mac"><span class="icon">📀</span><span>从 DMG 双击「Install AI Media Agent」安装（勿用 .command 文件）</span></div>
+            <div class="check-item platform-mac"><span class="icon">🛡</span><span>若提示无法打开：Control+点击安装程序 → 打开 → 打开（仅首次）</span></div>
+            <div class="check-item platform-win"><span class="icon">📦</span><span>解压 zip 后运行 AI Media Agent.exe；内置 Python/Node/Skills 无需联网安装</span></div>
+            <div class="check-item platform-win"><span class="icon">🛡</span><span>若 SmartScreen 拦截：点击「更多信息」→「仍要运行」</span></div>
+            <div class="check-item"><span class="icon">✅</span><span>优先离线安装 Python 依赖（构建期 wheel）；无 wheel 时自动联网并显示进度</span></div>
+            <div class="check-item"><span class="icon">✅</span><span>引导配置 LLM API Key（通义 DashScope / 智谱 / OpenRouter 等）</span></div>
+            <div class="check-item platform-win"><span class="icon">🎤</span><span>桌宠语音 STT 需配置 DashScope Key（qwen3-asr-flash，与 LLM 通义 Key 相同）</span></div>
+            <div class="check-item"><span class="icon">⏱</span><span>完整离线包首启约 30–90 秒；无 wheel 时约 3–5 分钟</span></div>
+        </div>
+        <button class="btn btn-primary" id="btn-start">开始自动安装</button>
+    </div>
+
+    <!-- Step 1: Installing -->
+    <div class="panel" id="panel-install">
+        <div class="logo">⚙️</div>
+        <h1>正在自动安装</h1>
+        <p class="subtitle">请稍候，正在准备运行环境…</p>
+        <div class="install-step" id="install-step">当前步骤：准备中…</div>
+        <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+        <div class="status-msg" id="status-msg">准备中…</div>
+        <div class="detail-msg" id="detail-msg"></div>
+        <div class="install-log-wrap">
+            <div class="install-log-header">
+                <span>安装日志</span>
+                <button type="button" class="btn-link" id="btn-open-install-log">打开日志文件</button>
+            </div>
+            <pre class="install-log" id="install-log"></pre>
+        </div>
+        <p class="install-log-path" id="install-log-path"></p>
+    </div>
+
+    <!-- Step 2: API Config -->
+    <div class="panel" id="panel-config">
+        <div class="logo">🔑</div>
+        <h1>配置 AI 模型</h1>
+        <p class="subtitle">至少填写一个 API Key，即可开始使用。</p>
+        <div class="form-group">
+            <label for="provider">模型供应商</label>
+            <select id="provider">
+                <option value="alibaba">通义千问 Qwen（阿里云 DashScope）</option>
+                <option value="zhipu">智谱 AI（GLM-4）</option>
+                <option value="openrouter">OpenRouter（多模型聚合）</option>
+                <option value="google">Google Gemini</option>
+                <option value="deepseek">DeepSeek</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="api-key">API Key</label>
+            <input type="password" id="api-key" placeholder="sk-…" autocomplete="off">
+        </div>
+        <p class="hint" id="provider-hint">
+            通义 Key 获取：<a href="#" data-url="https://dashscope.console.aliyun.com/apiKey">dashscope.console.aliyun.com</a>
+        </p>
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="btn-skip-config">稍后配置</button>
+            <button class="btn btn-primary" id="btn-save-config">保存并启动</button>
+        </div>
+    </div>
+
+    <!-- Step 3: Done -->
+    <div class="panel" id="panel-done">
+        <div class="success-icon">🎉</div>
+        <h1>安装完成！</h1>
+        <p class="subtitle">所有服务正在启动，稍后即可打开控制台开始使用。</p>
+        <button class="btn btn-primary" id="btn-open-dashboard">打开控制台</button>
+        <button class="btn btn-secondary" id="btn-open-status">查看服务状态</button>
+    </div>
+    </div>
+
+    <script src="setup.js"></script>
+</body>
+</html>

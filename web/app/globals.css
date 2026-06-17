@@ -1,0 +1,474 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1d1d1f;
+  /* Apple-like chrome：纯色画布 + 细分隔线，避免多层半透明叠加出「横向割裂」渐变 */
+  --shell-bg: #f5f5f7;
+  --chrome-rail-bg: #fafafa;
+  --separator: rgba(60, 60, 67, 0.12);
+  --separator-subtle: rgba(60, 60, 67, 0.08);
+  --card-bg: #ffffff;
+  --accent: #ff9500;
+  --label-secondary: rgba(60, 60, 67, 0.6);
+  /* 占位符：白底上需明显高于 WCAG 建议，避免「浅灰看不见」 */
+  --placeholder-foreground: #4a5565;
+  --nav-active-fill: rgba(0, 0, 0, 0.06);
+  /* 状态色（徽章 / 错误块）：明暗共用变量，避免 red-500 贴在深色底上不可读 */
+  --status-success-bg: color-mix(in srgb, #22c55e 14%, transparent);
+  --status-success-border: color-mix(in srgb, #22c55e 38%, transparent);
+  --status-success-text: #166534;
+  --status-danger-bg: color-mix(in srgb, #ef4444 12%, transparent);
+  --status-danger-border: color-mix(in srgb, #ef4444 34%, transparent);
+  --status-danger-text: #991b1b;
+  --status-warning-bg: color-mix(in srgb, #f59e0b 14%, transparent);
+  --status-warning-border: color-mix(in srgb, #f59e0b 40%, transparent);
+  --status-warning-text: #92400e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html.theme-dark {
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --shell-bg: #1c1c1e;
+  --chrome-rail-bg: #2c2c2e;
+  --separator: rgba(255, 255, 255, 0.12);
+  --separator-subtle: rgba(255, 255, 255, 0.08);
+  --card-bg: #2c2c2e;
+  --label-secondary: rgba(235, 235, 245, 0.55);
+  --placeholder-foreground: #c4c7d1;
+  --nav-active-fill: rgba(255, 255, 255, 0.1);
+  --status-success-bg: color-mix(in srgb, #4ade80 14%, transparent);
+  --status-success-border: color-mix(in srgb, #4ade80 42%, transparent);
+  --status-success-text: #bbf7d0;
+  --status-danger-bg: color-mix(in srgb, #f87171 16%, transparent);
+  --status-danger-border: color-mix(in srgb, #f87171 48%, transparent);
+  --status-danger-text: #fecaca;
+  --status-warning-bg: color-mix(in srgb, #fbbf24 18%, transparent);
+  --status-warning-border: color-mix(in srgb, #fbbf24 48%, transparent);
+  --status-warning-text: #fde68a;
+  color-scheme: dark;
+}
+
+html.theme-light {
+  --background: #ffffff;
+  --foreground: #1d1d1f;
+  --placeholder-foreground: #4a5565;
+  color-scheme: light;
+}
+
+/* AppShell 外层：与工作区同色块，无纹理叠层 */
+.brand-shell-bg {
+  background-color: var(--shell-bg);
+}
+
+/* 侧栏 / 模型栏：略浅的实心轨 + 发丝线 */
+.chrome-rail {
+  background-color: var(--chrome-rail-bg);
+}
+
+.chrome-rail-edge-right {
+  border-right: 1px solid var(--separator-subtle);
+}
+
+.chrome-rail-edge-left {
+  border-left: 1px solid var(--separator-subtle);
+}
+
+.workspace-main-fill {
+  background-color: var(--shell-bg);
+}
+
+/* 内页：与主区同色，勿再叠 slate/#f8fafc */
+.page-canvas {
+  min-height: 100%;
+  color: var(--foreground);
+}
+
+/* 小型浮动菜单：浅色模式实底，深色模式磨砂 */
+.popover-vibrant {
+  background-color: var(--card-bg);
+  border: 1px solid var(--separator-subtle);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.14),
+    0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+html.theme-dark .popover-vibrant {
+  background-color: color-mix(in srgb, var(--card-bg) 88%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .popover-vibrant {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: var(--card-bg);
+  }
+}
+
+/* 设置卡片、输入容器：实底 + 发丝边框，避免半透明叠层 */
+.card-surface {
+  background-color: var(--card-bg);
+  border: 1px solid var(--separator-subtle);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+html.theme-dark .card-surface {
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* 顶栏、抽屉把手：与工作区同源实色，仅用底部分隔 */
+.chrome-bar {
+  background-color: var(--shell-bg);
+  border-bottom: 1px solid var(--separator-subtle);
+}
+
+html.theme-dark .chrome-bar {
+  border-bottom-color: var(--separator-subtle);
+}
+
+/* 悬浮菜单（「更多」）：白卡片 + 轻阴影 */
+.popover-surface {
+  background-color: var(--card-bg);
+  border: 1px solid var(--separator-subtle);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+html.theme-dark .popover-surface {
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .workspace-main-fill,
+  .brand-shell-bg {
+    background-color: var(--shell-bg);
+  }
+
+  .chrome-rail {
+    background-color: var(--chrome-rail-bg);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+input,
+textarea {
+  color: #1d1d1f !important;
+  /* WebKit：否则可能仍沿用 -webkit-text-fill-color 继承的浅色字，白底上几乎看不见 */
+  -webkit-text-fill-color: #1d1d1f !important;
+  font-size: 16px !important;
+}
+
+html.theme-dark input,
+html.theme-dark textarea {
+  color: #f5f5f7 !important;
+  -webkit-text-fill-color: #f5f5f7 !important;
+}
+
+/* 深色卡片内的输入框：全局 textarea 在浅色主题下强制 #1d1d1f，叠在深色底上会不可读 */
+textarea.text-on-dark-surface {
+  color: #f5f5f7 !important;
+  -webkit-text-fill-color: #f5f5f7 !important;
+}
+
+textarea.text-on-dark-surface::placeholder {
+  color: #d6d8de !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder-foreground) !important;
+  opacity: 1 !important;
+}
+
+/* 聊天主输入（白底/卡片内）：再加深一档，与正文 #1d1d1f 仍可区分 */
+textarea.chat-placeholder-high-contrast::placeholder {
+  color: #3d4b5c !important;
+}
+
+html.theme-dark textarea.chat-placeholder-high-contrast::placeholder {
+  color: #cfd2dc !important;
+}
+
+/*
+ * Nova / Companion 等：输入条落在白卡片上，但 html 仍为 theme-dark。
+ * 全局会把 textarea 正文/占位符套成浅色，叠在白底上会发虚、几乎看不见。
+ * 在此强制按「浅底深字」渲染，并提高占位符明度（仍与正文区分）。
+ */
+textarea.nova-light-composer-input {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+textarea.nova-light-composer-input::placeholder {
+  color: #5c6678 !important;
+  opacity: 1 !important;
+}
+
+html.theme-dark textarea.nova-light-composer-input {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+html.theme-dark textarea.nova-light-composer-input::placeholder {
+  color: #5c6678 !important;
+}
+
+textarea.nova-light-composer-input::-webkit-input-placeholder {
+  color: #5c6678 !important;
+  -webkit-text-fill-color: #5c6678 !important;
+}
+
+html.theme-dark textarea.nova-light-composer-input::-webkit-input-placeholder {
+  color: #5c6678 !important;
+  -webkit-text-fill-color: #5c6678 !important;
+}
+
+/* 主聊天多模态输入：白底上用略深的字色 + 与 theme-dark 显式对齐，避免继承链/WebKit 造成发虚、偏浅 */
+textarea.chat-composer-input {
+  color: #101010 !important;
+  -webkit-text-fill-color: #101010 !important;
+}
+
+html.theme-dark textarea.chat-composer-input {
+  color: #f5f5f7 !important;
+  -webkit-text-fill-color: #f5f5f7 !important;
+}
+
+pre,
+code {
+  color: #1d1d1f;
+}
+
+html.theme-dark pre,
+html.theme-dark code {
+  color: #ebebf5;
+}
+
+/* Fenced code blocks render on a dark slate surface in BOTH themes, so their
+ * text must stay light. These element rules are unlayered (same as the rule
+ * above) but more specific, so they win over the generic `pre, code` color
+ * without fighting Tailwind utility layers. Fixes dark-on-dark code that was
+ * only legible when selected. */
+pre code,
+.markdown-summary-pre pre,
+.markdown-summary-pre pre code {
+  color: #f1f5f9;
+}
+
+html.theme-dark pre code,
+html.theme-dark .markdown-summary-pre pre,
+html.theme-dark .markdown-summary-pre pre code {
+  color: #f1f5f9;
+}
+
+/* ─── Workflow Builder ─────────────────────────────────────────────────────── */
+
+/* Running node pulse animation */
+@keyframes workflow-node-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(59, 130, 246, 0.6),
+      0 0 0 4px rgba(59, 130, 246, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(59, 130, 246, 0.9),
+      0 0 0 8px rgba(59, 130, 246, 0.05);
+  }
+}
+
+.workflow-node-running {
+  animation: workflow-node-pulse 1.4s ease-in-out infinite;
+}
+
+/* Workflow node — theme-aware shadows */
+.wf-node {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.42);
+}
+html.theme-light .wf-node {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 2px 10px rgba(0, 0, 0, 0.07);
+}
+.wf-node-selected {
+  box-shadow:
+    0 0 0 2px #ff9500,
+    0 8px 32px rgba(0, 0, 0, 0.52) !important;
+}
+html.theme-light .wf-node-selected {
+  box-shadow:
+    0 0 0 2px #ff9500,
+    0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+.wf-node-running-shadow {
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.6),
+    0 8px 24px rgba(59, 130, 246, 0.15) !important;
+}
+.wf-node-complete {
+  box-shadow:
+    0 0 0 1.5px rgba(0, 195, 127, 0.5),
+    0 4px 16px rgba(0, 195, 127, 0.1) !important;
+}
+html.theme-light .wf-node-complete {
+  box-shadow:
+    0 0 0 1.5px rgba(0, 195, 127, 0.5),
+    0 2px 8px rgba(0, 195, 127, 0.08) !important;
+}
+.wf-node-failed {
+  box-shadow: 0 0 0 1.5px rgba(239, 68, 68, 0.5) !important;
+}
+
+/* Inputs inside dark workflow panels — override the global light-force rule */
+.wf-dark-panel input,
+.wf-dark-panel textarea,
+.wf-dark-panel select {
+  color: #e4e4e7 !important;
+  -webkit-text-fill-color: #e4e4e7 !important;
+}
+
+.wf-dark-panel input::placeholder,
+.wf-dark-panel textarea::placeholder {
+  color: #3f3f46 !important;
+  -webkit-text-fill-color: #3f3f46 !important;
+  opacity: 1 !important;
+}
+
+/* React Flow canvas dark overrides */
+.wf-canvas .react-flow__background pattern circle,
+.wf-canvas .react-flow__background pattern rect {
+  fill: rgba(255, 255, 255, 0.06) !important;
+}
+
+.wf-canvas .react-flow__controls {
+  background: transparent;
+  border: none;
+  gap: 4px;
+  padding: 4px;
+}
+
+.wf-canvas .react-flow__controls button {
+  background: #1c1c1e !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #71717a !important;
+  border-radius: 8px !important;
+  width: 26px !important;
+  height: 26px !important;
+  box-shadow: none !important;
+}
+
+.wf-canvas .react-flow__controls button:hover {
+  background: #2c2c2e !important;
+  color: #e4e4e7 !important;
+}
+
+.wf-canvas .react-flow__edge-path {
+  stroke: rgba(255, 255, 255, 0.18) !important;
+  stroke-width: 1.5px !important;
+}
+
+.wf-canvas .react-flow__edge.selected .react-flow__edge-path,
+.wf-canvas .react-flow__edge:hover .react-flow__edge-path {
+  stroke: #ff9500 !important;
+  stroke-width: 2px !important;
+}
+
+.wf-canvas .react-flow__edge-text {
+  fill: #71717a !important;
+}
+
+.wf-canvas .react-flow__connection-path {
+  stroke: #ff9500 !important;
+  stroke-width: 2px !important;
+}
+
+.wf-canvas .react-flow__minimap {
+  background: #111113 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important;
+}
+
+.wf-canvas .react-flow__minimap-mask {
+  fill: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* React Flow canvas light theme overrides */
+html.theme-light .wf-canvas .react-flow__background pattern circle,
+html.theme-light .wf-canvas .react-flow__background pattern rect {
+  fill: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.theme-light .wf-canvas .react-flow__controls button {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--separator-subtle) !important;
+  color: var(--label-secondary) !important;
+}
+
+html.theme-light .wf-canvas .react-flow__controls button:hover {
+  background: var(--shell-bg) !important;
+  color: var(--foreground) !important;
+}
+
+html.theme-light .wf-canvas .react-flow__edge-path {
+  stroke: rgba(0, 0, 0, 0.18) !important;
+}
+
+html.theme-light .wf-canvas .react-flow__edge-text {
+  fill: var(--label-secondary) !important;
+}
+
+html.theme-light .wf-canvas .react-flow__minimap {
+  background: var(--shell-bg) !important;
+  border: 1px solid var(--separator-subtle) !important;
+}
+
+html.theme-light .wf-canvas .react-flow__minimap-mask {
+  fill: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* 餐费 H5：飞书内置浏览器 / 手机 Safari */
+.meal-mobile-page {
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+.meal-mobile-page input[type="date"],
+.meal-mobile-page input[type="month"] {
+  min-height: 2.75rem;
+  font-size: 1rem;
+}
+
+.meal-mobile-page input[type="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Media Agent</title>
+    <link rel="stylesheet" href="splash.css">
+</head>
+<body>
+    <div class="shell">
+        <div class="logo-ring">
+            <div class="logo">🚀</div>
+        </div>
+        <h1>AI Media Agent</h1>
+        <p class="tagline">正在启动本地服务…</p>
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="status" id="status-msg">准备环境…</p>
+        <p class="detail" id="detail-msg"></p>
+        <ul class="steps" id="steps">
+            <li data-step="sync">同步后端</li>
+            <li data-step="backend">Backend</li>
+            <li data-step="frontend">Frontend</li>
+            <li data-step="ready">就绪</li>
+        </ul>
+    </div>
+    <script src="splash.js"></script>
+</body>
+</html>

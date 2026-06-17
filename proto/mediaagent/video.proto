@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package mediaagent;
+
+import "mediaagent/common.proto";
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+
+// ── 视频元数据 ────────────────────────────────────────────
+message VideoTrack {
+  string codec        = 1;
+  int32  width        = 2;
+  int32  height       = 3;
+  double fps          = 4;
+  int64  duration_ms  = 5;
+  string pixel_format = 6;
+  int64  bitrate_bps  = 7;
+}
+
+message AudioTrack {
+  string codec        = 1;
+  int32  sample_rate  = 2;
+  int32  channels     = 3;
+  int64  bitrate_bps  = 4;
+  string language     = 5;
+}
+
+message VideoMetadata {
+  string            file_name     = 1;
+  string            file_path     = 2;
+  int64             file_size     = 3;  // bytes
+  int64             duration_ms   = 4;
+  string            container     = 5;  // "mp4", "mkv", "webm"
+  repeated VideoTrack video_tracks = 6;
+  repeated AudioTrack audio_tracks = 7;
+  map<string, string> tags        = 8;
+  string            created_at    = 9;
+}
+
+// ── 关键帧 ────────────────────────────────────────────────
+message KeyFrame {
+  int64  timestamp_ms = 1;  // 帧时间戳（毫秒）
+  int32  frame_index  = 2;
+  bytes  image_data   = 3;  // JPEG 字节（可选，需 include_images=true）
+  string image_path   = 4;  // 提取到服务端的路径
+  double scene_score  = 5;  // 场景变化得分 0-1
+}
+
+message KeyFrameResponse {
+  string            request_id = 1;
+  VideoMetadata     metadata   = 2;
+  repeated KeyFrame frames     = 3;
+  TaskStatus        status     = 4;
+  Error             error      = 5;
+  int64             latency_ms = 6;
+}
+
+// ── 音频提取 ──────────────────────────────────────────────
+message AudioResponse {
+  string     request_id  = 1;
+  string     audio_path  = 2;  // 提取的音频文件路径（WAV/MP3）
+  bytes      audio_data  = 3;  // 内联音频（小文件）
+  int64      duration_ms = 4;
+  TaskStatus status      = 5;
+  Error      error       = 6;
+}
+
+// ── 请求 ──────────────────────────────────────────────────
+message VideoRequest {
+  oneof source {
+    bytes  file_data = 1;
+    string file_path = 2;
+  }
+  int32  max_frames      = 3;  // ExtractKeyFrames 最多返回帧数，默认 10
+  bool   include_images  = 4;  // 是否内联图片字节
+  double scene_threshold = 5;  // 场景切换检测阈值 0-1，默认 0.3
+  string audio_format    = 6;  // "wav" | "mp3"，默认 "wav"
+  string request_id      = 7;
+}
+
+// ── 服务定义 ──────────────────────────────────────────────
+service VideoService {
+  // 提取关键帧（同步，帧数 <= max_frames）
+  rpc ExtractKeyFrames (VideoRequest) returns (KeyFrameResponse);
+
+  // 获取完整元数据（容器/轨道/时长等）
+  rpc GetMetadata (VideoRequest) returns (VideoMetadata);
+
+  // 提取音轨
+  rpc ExtractAudio (VideoRequest) returns (AudioResponse);
+}

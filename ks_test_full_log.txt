@@ -1,0 +1,58 @@
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed\nCall log:\n  - waiting for locator("text=\\"上传成功\\"") to be visible\n')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+Call log:
+  - waiting for locator("text=\"上传成功\"") to be visible
+
+pipe closed by peer or os.write(pipe, data) raised exception.
+pipe closed by peer or os.write(pipe, data) raised exception.
+Traceback (most recent call last):
+  File "/Users/tutu/Documents/agent/test_ks_publish.py", line 33, in test_publish
+    result = await connector.publish_content(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "/Users/tutu/Documents/agent/backend/tools/connectors/kuaishou.py", line 449, in publish_content
+    await browser.close()
+  File "/tmp/my_lib/playwright/async_api/_generated.py", line 14322, in close
+    return mapping.from_maybe_impl(await self._impl_obj.close(reason=reason))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/my_lib/playwright/_impl/_browser.py", line 241, in close
+    raise e
+  File "/tmp/my_lib/playwright/_impl/_browser.py", line 238, in close
+    await self._channel.send("close", None, {"reason": reason})
+  File "/tmp/my_lib/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/tmp/my_lib/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+Exception: Browser.close: Connection closed while reading from the driver
+Starting test publish for Kuaishou with video: /tmp/bbb.mp4
+[Kuaishou] Browser Path: /Users/tutu/Documents/agent/.browsers/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell
+[Kuaishou] Debug Path Discovery:
+  - root_dir: /Users/tutu/Documents/agent
+  - original_root: /Users/tutu/Documents/agent
+  - media_path (input): /tmp/bbb.mp4
+  - Testing /tmp/bbb.mp4: EXISTS
+[Kuaishou] 找到文件: /tmp/bbb.mp4
+[Kuaishou] Entering async_playwright...
+[Kuaishou] Launched playwright engine.
+[Kuaishou] 正在打开发布页...
+[Kuaishou] Setting up continuous overlay clearing...
+[Kuaishou] Clearing overlays...
+[Kuaishou] Uploading /tmp/bbb.mp4...
+[Kuaishou] Waiting for upload to complete...
+[Kuaishou] Warning: Upload success text not found, proceeding anyway...
+Failed to dump html: Page.content: Target page, context or browser has been closed
+[Kuaishou] Filling description: This is a test publi...
+[Kuaishou] Screenshot failed: Page.screenshot: Connection closed while reading from the driver
+[Kuaishou] Failed to fill description: Locator.count: Connection closed while reading from the driver
+[Kuaishou] Clearing overlays...
+[Kuaishou] Clear overlays failed: Page.evaluate: Connection closed while reading from the driver
+[Kuaishou] Clicking publish...
+[Kuaishou] Screenshot failed: Page.screenshot: Connection closed while reading from the driver
+Caught top-level exception: Browser.close: Connection closed while reading from the driver

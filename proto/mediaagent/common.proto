@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package mediaagent;
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+option java_package = "com.mediaagent.proto";
+
+// ── 通用枚举 ──────────────────────────────────────────────
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_PENDING     = 1;
+  TASK_STATUS_RUNNING     = 2;
+  TASK_STATUS_COMPLETED   = 3;
+  TASK_STATUS_FAILED      = 4;
+}
+
+// ── OCR / 文本块 ──────────────────────────────────────────
+message BoundingBox {
+  float x      = 1;  // 左上角 x（归一化 0-1）
+  float y      = 2;  // 左上角 y（归一化 0-1）
+  float width  = 3;
+  float height = 4;
+}
+
+message TextBlock {
+  string      text       = 1;
+  float       confidence = 2;  // 0.0 - 1.0
+  BoundingBox bbox       = 3;
+  string      language   = 4;  // ISO 639-1, e.g. "zh", "en"
+  int32       page       = 5;  // PDF 页码（从 1 开始）
+}
+
+// ── 文档元数据 ────────────────────────────────────────────
+message DocumentMetadata {
+  string file_name  = 1;
+  string file_path  = 2;
+  int64  file_size  = 3;  // bytes
+  int32  page_count = 4;
+  string author     = 5;
+  string title      = 6;
+  string created_at = 7;  // RFC 3339
+  string format     = 8;  // "pdf", "docx", etc.
+  map<string, string> extra = 9;
+}
+
+// ── 表格数据 ──────────────────────────────────────────────
+message TableRow {
+  repeated string cells = 1;
+}
+
+message TableData {
+  repeated string   headers = 1;
+  repeated TableRow rows    = 2;
+  int32             page    = 3;
+  string            caption = 4;
+}
+
+// ── 页面内容 ──────────────────────────────────────────────
+message PageContent {
+  int32             page_number = 1;
+  string            text        = 2;
+  repeated TableData tables     = 3;
+  repeated TextBlock text_blocks = 4;  // 带坐标的文本块
+}
+
+// ── 通用错误 ──────────────────────────────────────────────
+message Error {
+  int32  code    = 1;
+  string message = 2;
+  string detail  = 3;
+}

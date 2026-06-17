@@ -1,0 +1,16 @@
+{
+  "name": "ai-media-agent-figma-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Figma plugin bridge for AI Media Agent — enables deterministic design automation via local MCP/WebSocket.",
+  "scripts": {
+    "build": "esbuild src/code.ts --bundle --outfile=build/code.js --target=es2017 --format=iife --platform=browser && esbuild src/ui.ts --bundle --outfile=build/ui.js --target=es2017 --format=iife --platform=browser && node scripts/copy-html.js",
+    "watch": "npm run build -- --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.110.0",
+    "esbuild": "^0.28.1",
+    "typescript": "^5.8.0"
+  }
+}

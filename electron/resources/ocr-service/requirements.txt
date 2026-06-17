@@ -1,0 +1,8 @@
+grpcio>=1.60.0
+grpcio-tools>=1.60.0
+paddleocr>=2.7.0
+paddlepaddle>=2.6.0
+Pillow>=10.0.0
+numpy>=1.24.0
+easyocr>=1.7.0
+opencv-python-headless>=4.8.0

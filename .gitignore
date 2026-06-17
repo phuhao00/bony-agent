@@ -1,0 +1,122 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Environment and Credentials
+.env
+.env.local
+*.env
+backend/.env
+electron/resources/backend/.env
+platform_credentials.json
+*_cookies.json
+
+# Apple Developer Certificates & Signing Keys
+*.key
+*.cer
+*.p12
+*.pfx
+*.mobileprovision
+developer_id_private.key
+developerID_application.cer
+electron/mac-build.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Large Binaries and Browsers
+.browsers/
+tmp/
+tmp_test/
+node_modules/
+.next/
+.codegraph/
+
+# Generated outputs
+generated_outputs/*.jpg
+generated_outputs/*.png
+generated_outputs/*.mp4
+!generated_outputs/.gitkeep
+
+# Debug and Temporary artifacts
+*.png
+!web/public/brand-logo.png
+!electron/assets/logo.png
+!electron/resources/web-standalone/public/brand-logo.png
+electron/resources/python/*.tar.gz
+electron/resources/node/
+electron/resources/pip-wheels-win/
+electron/resources/pip-wheels-mac/
+electron/resources/python/venv-prebuilt/
+electron/resources/lark-cli/
+electron/resources/mcp-bundled/
+electron/resources/codegraph/
+electron/resources/scripts/
+electron/resources/backend/.env.bundled
+*.jpg
+*.jpeg
+*.mp4
+*.html
+!web/**/*.html
+!electron/**/*.html
+!mobile/**/*.html
+debug_page_source.html
+browser-extension.pem
+browser-extension.crx
+
+# Professional specific ignores
+douyin_login_qr.png
+douyin_login_qr.html
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# RAG storage
+rag_storage/*
+!rag_storage/.gitkeep
+
+# Memory storage
+memory_storage/*
+!memory_storage/.gitkeep
+
+# Chat history (敏感数据)
+chat_history.json
+
+# Media registry
+media_registry.json
+
+# Logs
+*.log
+logs/
+
+# Docker volumes
+chroma-data/
+
+# Backend runtime artifacts
+backend/agent.log.*
+backend/storage/
+backend/generation_history.json
+
+# Rust build artifacts
+backend_safety/target/
+
+# Go build artifacts
+backend_massive_concurrent/bin/
+
+# Root-level runtime storage (keep .gitkeep markers)
+storage/*
+!storage/**/.gitkeep

@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package mediaagent;
+
+import "mediaagent/common.proto";
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+
+// ── 文件条目 ──────────────────────────────────────────────
+message FileEntry {
+  string path         = 1;
+  string name         = 2;
+  string extension    = 3;
+  int64  size_bytes   = 4;
+  string modified_at  = 5;  // RFC 3339
+  string snippet      = 6;  // 文本前 500 字符预览
+  bool   is_dir       = 7;
+}
+
+// ── 索引进度（流式）─────────────────────────────────────────
+message IndexProgress {
+  string     root_path     = 1;
+  int32      files_found   = 2;
+  int32      files_indexed = 3;
+  int32      total_estimate = 4;  // 预估总数（-1 = 未知）
+  string     current_file  = 5;
+  TaskStatus status        = 6;
+  Error      error         = 7;
+  bool       is_done       = 8;
+}
+
+// ── 搜索 ──────────────────────────────────────────────────
+message SearchMatch {
+  FileEntry file    = 1;
+  string    context = 2;  // 匹配行及上下文
+  int32     score   = 3;  // 相关性分数
+}
+
+// ── 文件系统事件 ──────────────────────────────────────────
+enum WatchEventType {
+  WATCH_EVENT_UNSPECIFIED = 0;
+  WATCH_EVENT_CREATE      = 1;
+  WATCH_EVENT_MODIFY      = 2;
+  WATCH_EVENT_DELETE      = 3;
+  WATCH_EVENT_RENAME      = 4;
+}
+
+message WatchEvent {
+  WatchEventType event_type = 1;
+  string         path       = 2;
+  string         old_path   = 3;  // RENAME 时的原路径
+  string         timestamp  = 4;  // RFC 3339
+  FileEntry      entry      = 5;  // CREATE/MODIFY 时的文件信息
+}
+
+// ── 请求 ──────────────────────────────────────────────────
+message IndexRequest {
+  string          root_path    = 1;
+  repeated string extensions   = 2;  // 为空时索引所有文件
+  bool            recursive    = 3;  // 默认 true
+  int32           max_depth    = 4;  // 0 = 不限深度
+  int32           max_files    = 5;  // 0 = 不限数量
+  bool            extract_text = 6;  // 提取文本片段（snippet）
+}
+
+message SearchRequest {
+  string          root_path  = 1;  // 限定搜索范围
+  string          query      = 2;  // 关键词或正则
+  repeated string extensions = 3;
+  bool            use_regex  = 4;
+  int32           max_results = 5;  // 默认 50
+  bool            recursive  = 6;
+}
+
+message SearchResponse {
+  string                request_id = 1;
+  repeated SearchMatch  matches    = 2;
+  int32                 total      = 3;
+  bool                  truncated  = 4;
+  int64                 latency_ms = 5;
+}
+
+message WatchRequest {
+  repeated string paths      = 1;  // 监控的根目录列表
+  repeated string extensions = 2;  // 为空时监控所有变更
+  bool            recursive  = 3;  // 默认 true
+}
+
+// ── 服务定义 ──────────────────────────────────────────────
+service DirectoryService {
+  // 递归索引目录，流式返回进度
+  rpc IndexDirectory (IndexRequest) returns (stream IndexProgress);
+
+  // 文件内容搜索
+  rpc SearchFiles (SearchRequest) returns (SearchResponse);
+
+  // 实时监控目录变更（长连接流式）
+  rpc WatchDirectory (WatchRequest) returns (stream WatchEvent);
+}

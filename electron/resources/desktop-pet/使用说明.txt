@@ -1,0 +1,6 @@
+AI Media Agent 桌宠 (Windows，已随数字员工安装包附带)
+
+1. 先启动 AI Media Agent 主应用（系统托盘 → 启动桌宠 / 陪伴室）
+2. 或在主应用菜单选择「启动桌宠 (Boni)」
+3. 托盘 Alt+Shift+B 唤醒 · 右键菜单可关闭或退出
+4. 需要 WebView2 运行时（Win10/11 通常已自带）

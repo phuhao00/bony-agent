@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>AI Media Agent</title>
+  <link rel="stylesheet" href="/src/app.css" />
+</head>
+<body>
+  <div id="boot" class="screen">
+    <div class="logo">AI Media Agent</div>
+    <p class="hint">正在连接控制台…</p>
+  </div>
+
+  <div id="setup" class="screen hidden">
+    <header class="hero">
+      <div class="logo">AI Media Agent</div>
+      <p class="subtitle">独立客户端 · 全屏控制台（无需 Safari）</p>
+    </header>
+
+    <main class="card">
+      <h1>连接服务端</h1>
+      <p class="desc">
+        iPhone 无法像 Windows 桌面版那样在本地运行 Python/Node。
+        请先在本机或局域网内启动 AI Media Agent 桌面版，再填写控制台地址。
+      </p>
+
+      <label for="serverUrl">控制台地址</label>
+      <input
+        id="serverUrl"
+        type="url"
+        inputmode="url"
+        autocapitalize="none"
+        spellcheck="false"
+        placeholder="http://192.168.1.10:3000"
+      />
+      <p class="tip">同一 Wi‑Fi 下填 Mac/PC 的局域网 IP，端口一般为 3000。</p>
+
+      <div id="error" class="error hidden"></div>
+
+      <button id="connectBtn" type="button" class="primary">连接并进入</button>
+      <button id="settingsBtn" type="button" class="ghost hidden">重新配置地址</button>
+    </main>
+
+    <footer class="footer">
+      <p>桌面版启动后，在「服务状态」页可查看控制台 URL。</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

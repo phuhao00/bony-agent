@@ -1,0 +1,124 @@
+{
+  "servers": [
+    {
+      "id": "mcp-preset-playwright",
+      "name": "Playwright 浏览器 MCP",
+      "url": "http://localhost:36833/mcp",
+      "description": "浏览器自动化快照与操作（需 Node.js 18+ 与本机 npx）",
+      "enabled": true,
+      "preset_id": "playwright",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-duckduckgo",
+      "name": "DuckDuckGo 搜索 MCP",
+      "url": "http://localhost:36831/mcp",
+      "description": "DuckDuckGo 网页搜索与页面正文抓取（需本机 uv 或 pip 包）",
+      "enabled": true,
+      "preset_id": "duckduckgo",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_everything",
+      "name": "官方 Everything MCP",
+      "url": "http://localhost:36835/mcp",
+      "description": "协议能力与特性演示（内置 Streamable HTTP，需 Node npx）。",
+      "enabled": true,
+      "preset_id": "official_everything",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_memory",
+      "name": "官方 Memory MCP",
+      "url": "http://localhost:36837/mcp",
+      "description": "图谱式记忆存储（stdio + supergateway→HTTP，需 Node npx）。",
+      "enabled": true,
+      "preset_id": "official_memory",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_sequentialthinking",
+      "name": "官方 Sequential Thinking MCP",
+      "url": "http://localhost:36841/mcp",
+      "description": "分步推理工具（stdio + supergateway，需 Node npx）。",
+      "enabled": true,
+      "preset_id": "official_sequentialthinking",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_fetch",
+      "name": "官方 Fetch MCP",
+      "url": "http://localhost:36843/mcp",
+      "description": "抓取网页转 Markdown（stdio + supergateway；推荐安装 uv 后使用 uvx）。",
+      "enabled": true,
+      "preset_id": "official_fetch",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_time",
+      "name": "官方 Time MCP",
+      "url": "http://localhost:36847/mcp",
+      "description": "时间与多时区工具（stdio + supergateway，需 uvx/pip）。",
+      "enabled": true,
+      "preset_id": "official_time",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_filesystem",
+      "name": "官方 Filesystem MCP",
+      "url": "http://localhost:36839/mcp",
+      "description": "限定访问项目根目录下文件（stdio + supergateway，需 Node npx）。",
+      "enabled": true,
+      "preset_id": "official_filesystem",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-official_git",
+      "name": "官方 Git MCP",
+      "url": "http://localhost:36845/mcp",
+      "description": "仓库操作工具（绑定当前项目根目录，需 uvx 或 pip 安装 mcp-server-git）。",
+      "enabled": true,
+      "preset_id": "official_git",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-codegraph",
+      "name": "CodeGraph 代码图谱 MCP",
+      "url": "http://localhost:36849/mcp",
+      "description": "本地代码知识图谱：explore/search/callers/impact（需 Node.js 18+ 与 npx，无需全局安装；首次需 init 索引）。",
+      "enabled": true,
+      "preset_id": "codegraph",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-hermes_local",
+      "name": "Hermes Agent MCP",
+      "url": "http://localhost:36851/mcp",
+      "description": "本地 Hermes Agent（hermes mcp serve）：会话检索、跨平台发消息等。需已安装 hermes CLI。",
+      "enabled": true,
+      "preset_id": "hermes_local",
+      "status": "",
+      "status_msg": ""
+    },
+    {
+      "id": "mcp-preset-ai_media_agent",
+      "name": "AI Media Agent MCP（本机）",
+      "url": "http://localhost:36850/mcp",
+      "description": "暴露本平台媒体/知识库/发布工具，供 Hermes 或其他 MCP 客户端调用。需后端 media_mcp_server 进程。",
+      "enabled": true,
+      "preset_id": "ai_media_agent",
+      "status": "",
+      "status_msg": ""
+    }
+  ]
+}

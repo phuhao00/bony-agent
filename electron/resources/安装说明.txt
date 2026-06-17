@@ -1,0 +1,27 @@
+AI Media Agent — macOS 安装说明（M 系列 Mac）
+============================================
+
+【方式一 · 推荐】无开发者账号包请按此安装
+
+  A) 双击 DMG 里的「Install AI Media Agent」（.app 安装器）
+     若提示无法打开：Control+点击 → 打开 → 打开 → 输入 Mac 密码
+
+  B) 打开「终端.app」，粘贴下面一整行后回车（任何 Mac 均可用）：
+
+bash "$(ls -d /Volumes/AI\ Media\ Agent* 2>/dev/null | tail -1)/dmg-install.sh"
+
+  勿将主程序拖入「应用程序」—— 未签名包易报「已损坏」。
+
+  首次安装会自动清理旧环境，无需手动删除 venv 或 python-dist。
+
+────────────────────────────────────────
+
+方式二：主程序已安装但打不开
+1. 打开「应用程序」→ AI Media Agent
+2. Control+点击 → 打开 → 打开（仅首次）
+
+────────────────────────────────────────
+
+开发者账号用户（双击即开）：
+  cd electron && ./build_mac.sh arm64
+  （需 mac-build.env 配置 Apple ID + 公证）

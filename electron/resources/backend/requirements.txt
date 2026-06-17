@@ -1,0 +1,63 @@
+fastapi
+uvicorn
+langchain
+langchain-core
+langchain-openai
+langchain-community
+langgraph
+langgraph-sdk
+langgraph-checkpoint-sqlite
+aiosqlite
+langserve[all]
+sse-starlette
+python-multipart
+python-dotenv
+bcrypt
+python-jose[cryptography]
+# zhipuai — 可选；仅在使用智谱媒体 API 时需要。默认通义千问无需安装。
+dashscope>=1.20.0
+requests
+beautifulsoup4
+pydantic
+pydantic-settings
+aiohttp
+Pillow
+psd-tools>=1.10.0
+# Image-to-PSD (LayerD, ICCV 2025): pip install git+https://github.com/CyberAgentAILab/LayerD.git
+# LayerD requires: transformers>=4.37,<=4.48  (conflicts with newer transformers if upgraded)
+PyMuPDF
+SQLAlchemy
+numpy
+# opencv-python-headless and easyocr moved to requirements-ocr.txt (lazy install, ~190MB)
+# sentence-transformers moved to requirements-ml.txt (lazy install, ~110MB; falls back to simple hash embedding)
+pypinyin
+turbovec[llama-index]>=0.7.0
+llama-index
+llama-index-core
+llama-index-embeddings-openai
+llama-index-embeddings-langchain
+llama-index-llms-openai
+playwright
+# Agent-S (optional; requires Python <=3.12): pip install "gui-agents>=0.3.2"
+edge-tts
+imageio-ffmpeg
+moviepy
+apscheduler>=3.6,<4
+# gRPC runtime (grpcio-tools is a build-time tool, not needed at runtime)
+grpcio>=1.60.0
+protobuf>=4.25.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+xlrd>=2.0.0
+python-pptx>=1.0.0
+markdown>=3.5.0
+pymupdf>=1.24.0
+lark-oapi>=1.4.0
+discord.py>=2.3.0
+# MCP server SDK (media_mcp_server preset)
+mcp>=1.1.0
+duckduckgo-mcp-server
+mcp-server-fetch
+mcp-server-git
+mcp-server-time
+claude-agent-sdk>=0.2.97

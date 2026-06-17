@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package mediaagent;
+
+import "mediaagent/common.proto";
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+
+// ── WorkflowScheduler: Go DAG 调度引擎 ──────────────────────────────
+// Python 提交 DAG 定义 → Go 维护 in-degree 状态 → 流式推送可执行步骤
+// Python 执行每步后调 ReportStepResult → Go 解锁下游节点 → 继续推送
+
+service WorkflowSchedulerService {
+  // 提交工作流 DAG，返回 server-streaming 的步骤分配
+  // Go 会在每次有新的 ready 节点时推送 StepAssignment
+  rpc ScheduleWorkflow(WorkflowRunRequest) returns (stream StepAssignment);
+
+  // Python 执行完一个节点后上报结果，Go 解锁下游节点
+  rpc ReportStepResult(StepResultRequest) returns (StepResultAck);
+
+  // 取消整个 run（context cancel 链式传播）
+  rpc CancelWorkflow(CancelWorkflowRequest) returns (CancelWorkflowAck);
+
+  // 查询 run 当前状态
+  rpc GetRunStatus(RunStatusRequest) returns (WorkflowRunStatus);
+}
+
+// ── 工作流节点定义 ─────────────────────────────────────────────────
+
+message WorkflowNodeDef {
+  string node_id   = 1;
+  string node_type = 2;  // e.g. "trigger_manual", "tool_image", "agent_media"
+  // 序列化的节点配置 JSON（Python 解析）
+  string config_json = 3;
+  // input_map: key=参数名, value="$sourceNodeId.outputKey" 或 literal
+  map<string, string> input_map = 4;
+  // output_map: key=输出名, value=输出描述（用于文档）
+  map<string, string> output_map = 5;
+}
+
+message WorkflowEdgeDef {
+  string source        = 1;
+  string target        = 2;
+  string source_handle = 3;  // e.g. "output", "true", "false"
+  string target_handle = 4;
+}
+
+// ── 请求 / 响应消息 ──────────────────────────────────────────────
+
+message WorkflowRunRequest {
+  string run_id      = 1;
+  string workflow_id = 2;
+  repeated WorkflowNodeDef nodes = 3;
+  repeated WorkflowEdgeDef edges = 4;
+  // 初始变量（trigger 节点注入）
+  map<string, string> initial_variables = 5;
+}
+
+// Go → Python: 通知某节点已 ready，可以执行
+message StepAssignment {
+  string run_id  = 1;
+  string node_id = 2;
+  string node_type = 3;
+  string config_json = 4;
+  // 已解析的输入变量（Go 展开 input_map 引用后填充）
+  map<string, string> resolved_inputs = 5;
+}
+
+// Python → Go: 上报节点执行结果
+message StepResultRequest {
+  string run_id  = 1;
+  string node_id = 2;
+  TaskStatus status = 3;  // COMPLETED 或 FAILED
+  // 节点输出（key=输出名, value=序列化值）
+  map<string, string> outputs = 4;
+  string error = 5;  // 失败时的错误信息
+}
+
+message StepResultAck {
+  bool   accepted  = 1;
+  string message   = 2;
+}
+
+message CancelWorkflowRequest {
+  string run_id = 1;
+}
+
+message CancelWorkflowAck {
+  bool cancelled = 1;
+}
+
+message RunStatusRequest {
+  string run_id = 1;
+}
+
+// 单个节点的运行状态
+message NodeRunStatus {
+  string node_id = 1;
+  TaskStatus status = 2;
+  string error = 3;
+  int64  started_at_ms  = 4;
+  int64  finished_at_ms = 5;
+}
+
+message WorkflowRunStatus {
+  string run_id      = 1;
+  string workflow_id = 2;
+  TaskStatus status  = 3;
+  repeated NodeRunStatus node_statuses = 4;
+  int64 started_at_ms  = 5;
+  int64 finished_at_ms = 6;
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "task_id": "pub_1778674386",
+    "platform": "xiaohongshu",
+    "content": "test",
+    "title": "t",
+    "media": [
+      "/Users/tutu/Documents/agent/storage/outputs/3cade5d9-306d-4b18-9126-f52e3c4b04c0.mp4"
+    ],
+    "result": {
+      "success": false,
+      "platform": "xiaohongshu",
+      "post_id": null,
+      "url": null,
+      "error": "平台未连接或认证已过期，请重新登录",
+      "metadata": {}
+    },
+    "timestamp": "2026-05-13 20:13:06"
+  },
+  {
+    "task_id": "pub_1778675114",
+    "platform": "bilibili",
+    "content": "",
+    "title": "",
+    "media": [
+      "/Users/tutu/Documents/agent/storage/outputs/d224001b-5b36-4b47-9799-f4429f63f44b.mp4"
+    ],
+    "result": {
+      "success": false,
+      "platform": "bilibili",
+      "post_id": null,
+      "url": null,
+      "error": "平台未连接或认证已过期，请重新登录",
+      "metadata": {}
+    },
+    "timestamp": "2026-05-13 20:25:14"
+  },
+  {
+    "task_id": "BV12f5y6rE6z",
+    "platform": "bilibili",
+    "content": "",
+    "title": "",
+    "media": [
+      "/Users/tutu/Documents/agent/storage/outputs/3ab94e1e-6e7b-4f14-b498-985c73ae786e.mp4"
+    ],
+    "result": {
+      "success": true,
+      "platform": "bilibili",
+      "post_id": "BV12f5y6rE6z",
+      "url": "https://www.bilibili.com/video/BV12f5y6rE6z",
+      "error": null,
+      "metadata": {}
+    },
+    "timestamp": "2026-05-13 20:30:20"
+  },
+  {
+    "task_id": "BV1Wx5v6VEzg",
+    "platform": "bilibili",
+    "content": "",
+    "title": "",
+    "media": [
+      "/Users/tutu/Documents/agent/storage/outputs/0c41ed0c-cf84-40c3-833a-a2a1fb83e655.mp4"
+    ],
+    "result": {
+      "success": true,
+      "platform": "bilibili",
+      "post_id": "BV1Wx5v6VEzg",
+      "url": "https://www.bilibili.com/video/BV1Wx5v6VEzg",
+      "error": null,
+      "metadata": {}
+    },
+    "timestamp": "2026-05-15 15:50:58"
+  }
+]

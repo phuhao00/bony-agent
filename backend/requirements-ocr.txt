@@ -1,0 +1,5 @@
+# OCR optional dependencies — lazy-installed on first OCR use (~190MB)
+# These are NOT included in the base package to keep the installer slim.
+# The backend will install these automatically when OCR is first requested.
+easyocr
+opencv-python-headless

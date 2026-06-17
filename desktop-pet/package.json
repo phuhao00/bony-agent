@@ -1,0 +1,28 @@
+{
+  "name": "ai-media-agent-desktop-pet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Media Agent desktop companion pet — Tauri 2 sidecar connecting to FastAPI :8000",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:win": "tauri build --target x86_64-pc-windows-msvc",
+    "tauri:build:win:gnu": "tauri build --target x86_64-pc-windows-gnu --no-bundle"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.2.0",
+    "@tauri-apps/plugin-shell": "^2.2.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tauri-apps/cli": "^2.2.0",
+    "svelte": "^5.19.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}

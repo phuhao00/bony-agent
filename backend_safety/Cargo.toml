@@ -1,0 +1,50 @@
+[package]
+name    = "media-parser-service"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "parser-service"
+path = "src/main.rs"
+
+[dependencies]
+# gRPC / Protobuf
+tonic        = "0.11"
+prost        = "0.12"
+tokio        = { version = "1", features = ["rt-multi-thread", "macros", "fs", "process"] }
+tokio-stream = "0.1"
+futures      = "0.3"
+
+# 二进制解析
+nom          = "7"
+memmap2      = "0.9"
+
+# 并行处理
+rayon        = "1"
+
+# 文档解析
+zip          = "2"          # DOCX/XLSX/PPTX 本质是 zip
+quick-xml    = { version = "0.31", features = ["serialize"] }
+
+# 工具
+bytes        = "1"
+tracing      = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow       = "1"
+thiserror    = "1"
+serde        = { version = "1", features = ["derive"] }
+serde_json   = "1"
+uuid         = { version = "1", features = ["v4"] }
+walkdir      = "2"
+chacha20poly1305 = "0.10"
+base64       = "0.21"
+tempfile     = "3"
+
+[build-dependencies]
+tonic-build = "0.11"
+
+[profile.release]
+opt-level   = 3
+lto         = true
+codegen-units = 1
+panic       = "abort"

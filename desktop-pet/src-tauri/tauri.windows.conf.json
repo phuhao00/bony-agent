@@ -1,0 +1,31 @@
+{
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "AI Media Agent Pet",
+        "width": 260,
+        "height": 340,
+        "transparent": true,
+        "decorations": false,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "resizable": false,
+        "skipTaskbar": false
+      }
+    ]
+  },
+  "bundle": {
+    "targets": ["nsis"],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "nsis": {
+        "languages": ["SimpChinese", "English"],
+        "displayLanguageSelector": false
+      }
+    }
+  }
+}

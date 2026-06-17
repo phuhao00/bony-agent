@@ -1,0 +1,5 @@
+# ML embedding dependencies — lazy-installed on first semantic search use (~110MB)
+# Without these, vector_store.py falls back to hash-based embeddings (functional but lower quality).
+# Install for better RAG / agent memory recall:
+#   pip install -r requirements-ml.txt
+sentence-transformers>=3.0.0

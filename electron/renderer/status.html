@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Media Agent</title>
+    <link rel="stylesheet" href="status.css">
+</head>
+<body>
+    <div class="titlebar">
+        <h1>AI Media Agent</h1>
+    </div>
+
+    <div class="overall-status">
+        <div class="pulse-dot" id="overall-dot"></div>
+        <span class="overall-label" id="overall-label">Checking services…</span>
+        <button class="open-dashboard-btn" id="btn-dashboard" disabled>Open
+            Dashboard</button>
+    </div>
+
+    <div class="notice" id="gk-notice">
+        ⚠️ First launch? macOS may block unsigned apps.
+        <a onclick="showGKHelp()">How to allow it →</a>
+    </div>
+
+    <div class="services" id="services-list">
+        <!-- Populated by JS -->
+    </div>
+
+    <div class="footer">
+        <button class="btn" id="btn-restart">
+            <span class="btn-icon">&#x27F3;</span>Restart
+        </button>
+        <button class="btn" id="btn-config">
+            <span class="btn-icon">&#x2699;&#xFE0F;</span>Config
+        </button>
+        <button class="btn" id="btn-logs">
+            <span class="btn-icon">&#x1F4CB;</span>Logs
+        </button>
+        <button class="btn danger" id="btn-stop">
+            <span class="btn-icon">&#x23F9;</span>Stop
+        </button>
+    </div>
+
+    <script src="status.js"></script>
+</body>
+</html>

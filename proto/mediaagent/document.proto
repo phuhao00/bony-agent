@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package mediaagent;
+
+import "mediaagent/common.proto";
+
+option go_package = "github.com/ai-media-agent/generated/mediaagent";
+
+// ── 支持格式 ──────────────────────────────────────────────
+enum DocumentFormat {
+  DOCUMENT_FORMAT_UNSPECIFIED = 0;
+  DOCUMENT_FORMAT_PDF         = 1;
+  DOCUMENT_FORMAT_DOCX        = 2;
+  DOCUMENT_FORMAT_DOC         = 3;
+  DOCUMENT_FORMAT_TXT         = 4;
+  DOCUMENT_FORMAT_MARKDOWN    = 5;
+  DOCUMENT_FORMAT_CSV         = 6;
+  DOCUMENT_FORMAT_JSON        = 7;
+  DOCUMENT_FORMAT_HTML        = 8;
+  DOCUMENT_FORMAT_XLSX        = 9;
+  DOCUMENT_FORMAT_PPTX        = 10;
+}
+
+// ── 请求 ──────────────────────────────────────────────────
+message DocumentRequest {
+  oneof source {
+    bytes  file_data = 1;  // 内联字节（< 50 MB）
+    string file_path = 2;  // 服务端路径（大文件推荐）
+  }
+  DocumentFormat  format         = 3;  // 不填则自动检测
+  bool            extract_tables = 4;
+  bool            extract_images = 5;  // 提取嵌入图片路径
+  bool            ocr_fallback   = 6;  // 若文本层为空，调用 OCR 服务兜底
+  int32           start_page     = 7;  // 部分解析：起始页（1-based）
+  int32           end_page       = 8;  // 0 = 全部
+  string          request_id     = 9;
+}
+
+// ── 响应 ──────────────────────────────────────────────────
+message DocumentResponse {
+  string              request_id = 1;
+  DocumentMetadata    metadata   = 2;
+  string              full_text  = 3;  // 全文拼接
+  repeated PageContent pages     = 4;  // 按页详细内容
+  repeated string image_paths    = 5;  // 提取的嵌入图片（extract_images=true）
+  TaskStatus          status     = 6;
+  Error               error      = 7;
+  int64               latency_ms = 8;
+}
+
+// ── 流式块（大文件逐页推送）──────────────────────────────────
+message DocumentChunk {
+  string      request_id   = 1;
+  PageContent page         = 2;
+  int32       total_pages  = 3;
+  bool        is_last      = 4;
+  TaskStatus  status       = 5;
+  Error       error        = 6;
+}
+
+// ── 批量请求 ──────────────────────────────────────────────
+message DocumentBatchRequest {
+  DocumentRequest request     = 1;
+  int32           batch_index = 2;
+}
+
+message DocumentBatchResponse {
+  DocumentResponse response    = 1;
+  int32            batch_index = 2;
+}
+
+// ── 服务定义 ──────────────────────────────────────────────
+service DocumentService {
+  // 同步解析（整个文档一次返回）
+  rpc ParseDocument (DocumentRequest) returns (DocumentResponse);
+
+  // 流式解析（大文档逐页推送，推荐 > 10MB）
+  rpc ParseDocumentStream (DocumentRequest) returns (stream DocumentChunk);
+
+  // 批量解析（双向流式）
+  rpc ParseBatch (stream DocumentBatchRequest) returns (stream DocumentBatchResponse);
+}

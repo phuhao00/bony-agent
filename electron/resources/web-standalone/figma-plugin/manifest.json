@@ -1,0 +1,19 @@
+{
+  "name": "AI Media Agent Bridge",
+  "id": "ai-media-agent-figma-bridge",
+  "api": "1.0.0",
+  "main": "build/code.js",
+  "ui": "build/ui.html",
+  "editorType": ["figma"],
+  "permissions": ["currentuser"],
+  "enablePrivatePluginApi": true,
+  "networkAccess": {
+    "allowedDomains": ["none"],
+    "devAllowedDomains": [
+      "http://localhost:36855",
+      "https://localhost:36855",
+      "ws://localhost:36855",
+      "http://localhost:8000"
+    ]
+  }
+}

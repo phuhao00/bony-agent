@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+.cmem
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+/coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript build info
+*.tsbuildinfo
+
+# SQLite WAL mode files
+*.db-wal
+*.db-shm
+
+# Local Claude settings
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Parallels Windows VM SSH/connection config (local machine, see CLAUDE.md)
+.parallels
+
+# CodeGraph data directories (in test projects)
+.codegraph/
+
+test_frameworks
+
+# Test language repos for manual testing
+test-languages/
+
+nul
+release/
+
+.antigravitycli/
+
+# Local-only: browser-based tmux session launcher (see tmux-web/README.md)
+tmux-web/
+
+assets/__pycache__/
+
+assets/generate-waitlist.py

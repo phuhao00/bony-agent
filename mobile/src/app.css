@@ -1,0 +1,149 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f0f1a;
+  --card: #171726;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f4f4f8;
+  --muted: #9ca3af;
+  --accent: #6366f1;
+  --danger: #f87171;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  padding:
+    calc(16px + var(--safe-top))
+    16px
+    calc(16px + var(--safe-bottom));
+}
+
+.hidden {
+  display: none !important;
+}
+
+.screen {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hero {
+  text-align: center;
+  margin: 24px 0 20px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.card h1 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+.desc,
+.tip,
+.footer p,
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+label {
+  display: block;
+  margin: 18px 0 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0b0b14;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: 2px solid rgba(99, 102, 241, 0.45);
+  border-color: var(--accent);
+}
+
+.error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+}
+
+.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#boot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  gap: 12px;
+}
