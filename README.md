@@ -7,6 +7,8 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org)
 [![Version](https://img.shields.io/badge/Version-v1.0.36-green.svg)](docs/CHANGELOG.md)
 
+**中文** | **[English](./README_EN.md)**
+
 ---
 
 ## 📸 产品截图
