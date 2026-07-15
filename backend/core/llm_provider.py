@@ -330,13 +330,233 @@ def get_rag_llm_model() -> str:
     return get_current_model()
 
 
+def get_alibaba_base_url() -> str:
+    """通义 / Model Studio OpenAI 兼容地址，支持 DASHSCOPE_BASE_URL / ALIBABA_BASE_URL 覆盖。"""
+    raw = (
+        os.getenv("DASHSCOPE_BASE_URL")
+        or os.getenv("ALIBABA_BASE_URL")
+        or PROVIDERS["alibaba"].base_url
+    ).strip()
+    if not raw.endswith("/"):
+        raw += "/"
+    return raw
+
+
+def _looks_like_maas_workspace_url(base_url: str) -> bool:
+    return "maas.aliyuncs.com" in (base_url or "").lower()
+
+
+def _normalize_maas_chat_completion(payload: dict) -> dict:
+    """
+    部分 Model Studio / 工作区网关返回简化体 {"text","finish_reason"}，
+    而非 OpenAI ChatCompletion；规范化后供 SDK / LangChain 解析。
+    """
+    if not isinstance(payload, dict):
+        return payload
+    choices = payload.get("choices")
+    if isinstance(choices, list) and choices:
+        return payload
+    text = payload.get("text")
+    if text is None:
+        output = payload.get("output")
+        if isinstance(output, dict):
+            text = output.get("text") or output.get("content")
+        elif isinstance(output, str):
+            text = output
+    if text is None:
+        return payload
+    return {
+        "id": payload.get("id") or "chatcmpl-maas",
+        "object": "chat.completion",
+        "created": payload.get("created") or int(time.time()),
+        "model": payload.get("model") or get_current_model(),
+        "choices": [
+            {
+                "index": 0,
+                "finish_reason": payload.get("finish_reason") or "stop",
+                "message": {"role": "assistant", "content": text},
+            }
+        ],
+        "usage": payload.get("usage")
+        or {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+    }
+
+
+def _rebuild_maas_httpx_response(request, response, raw: bytes, content: bytes):
+    import httpx
+
+    # response.read() 已解压；去掉编码头，避免二次 gzip 解码失败
+    headers = {
+        k: v
+        for k, v in response.headers.items()
+        if k.lower() not in ("content-encoding", "content-length", "transfer-encoding")
+    }
+    headers["content-length"] = str(len(content))
+    headers["content-type"] = "application/json; charset=utf-8"
+    return httpx.Response(
+        status_code=response.status_code,
+        headers=headers,
+        content=content,
+        request=request,
+        extensions=response.extensions,
+    )
+
+
+def _request_wants_stream(request) -> bool:
+    import json as _json
+
+    try:
+        body = request.content or b""
+        if not body:
+            return False
+        data = _json.loads(body.decode("utf-8"))
+        return bool(isinstance(data, dict) and data.get("stream"))
+    except Exception:
+        return False
+
+
+def _completion_to_sse(normalized: dict) -> bytes:
+    import json as _json
+
+    choice = (normalized.get("choices") or [{}])[0]
+    message = choice.get("message") or {}
+    text = message.get("content") or ""
+    finish = choice.get("finish_reason") or "stop"
+    model = normalized.get("model") or get_current_model()
+    cid = normalized.get("id") or "chatcmpl-maas"
+    created = normalized.get("created") or int(time.time())
+    chunk1 = {
+        "id": cid,
+        "object": "chat.completion.chunk",
+        "created": created,
+        "model": model,
+        "choices": [
+            {
+                "index": 0,
+                "delta": {"role": "assistant", "content": text},
+                "finish_reason": None,
+            }
+        ],
+    }
+    chunk2 = {
+        "id": cid,
+        "object": "chat.completion.chunk",
+        "created": created,
+        "model": model,
+        "choices": [{"index": 0, "delta": {}, "finish_reason": finish}],
+    }
+    return (
+        f"data: {_json.dumps(chunk1, ensure_ascii=False)}\n\n"
+        f"data: {_json.dumps(chunk2, ensure_ascii=False)}\n\n"
+        "data: [DONE]\n\n"
+    ).encode("utf-8")
+
+
+def _adapt_maas_response(request, response, raw: bytes):
+    """
+    返回 (content_bytes, content_type)。
+    - 简化 JSON → 标准 ChatCompletion
+    - 若客户端请求 stream=true 但网关只回 JSON → 合成 SSE
+    """
+    import json as _json
+
+    content_type = (response.headers.get("content-type") or "").lower()
+    if "application/json" not in content_type:
+        return raw, None
+    try:
+        data = _json.loads(raw.decode("utf-8"))
+    except Exception:
+        return raw, None
+    if not isinstance(data, dict):
+        return raw, None
+
+    normalized = _normalize_maas_chat_completion(data)
+    payload = normalized if normalized is not data else data
+    has_choices = isinstance(payload.get("choices"), list) and bool(payload.get("choices"))
+
+    if _request_wants_stream(request):
+        # 网关常忽略 stream，直接回一整包 JSON；合成 SSE 供 OpenAI SDK 流式解析
+        if not has_choices and payload.get("text") is not None:
+            payload = _normalize_maas_chat_completion(payload)
+            has_choices = isinstance(payload.get("choices"), list) and bool(payload.get("choices"))
+        if has_choices:
+            return _completion_to_sse(payload), "text/event-stream"
+        return raw, None
+
+    if normalized is data:
+        return raw, None
+    return _json.dumps(normalized, ensure_ascii=False).encode("utf-8"), "application/json; charset=utf-8"
+
+
+def _rebuild_adapted_httpx_response(request, response, content: bytes, content_type: str | None):
+    import httpx
+
+    headers = {
+        k: v
+        for k, v in response.headers.items()
+        if k.lower() not in ("content-encoding", "content-length", "transfer-encoding")
+    }
+    headers["content-length"] = str(len(content))
+    if content_type:
+        headers["content-type"] = content_type
+    return httpx.Response(
+        status_code=response.status_code,
+        headers=headers,
+        content=content,
+        request=request,
+        extensions=response.extensions,
+    )
+
+
+def _build_maas_http_client():
+    """同步 httpx Client：把 MaaS 简化 JSON 响应改写成 OpenAI ChatCompletion。"""
+    import httpx
+
+    class _MaasNormalizeTransport(httpx.HTTPTransport):
+        def handle_request(self, request: httpx.Request) -> httpx.Response:
+            response = super().handle_request(request)
+            content_type = (response.headers.get("content-type") or "").lower()
+            if "application/json" not in content_type:
+                return response
+            raw = response.read()
+            content, out_ct = _adapt_maas_response(request, response, raw)
+            if content is raw and out_ct is None:
+                return _rebuild_adapted_httpx_response(request, response, raw, "application/json; charset=utf-8")
+            return _rebuild_adapted_httpx_response(request, response, content, out_ct or "application/json; charset=utf-8")
+
+    return httpx.Client(transport=_MaasNormalizeTransport(), timeout=120.0)
+
+
+def _build_maas_async_http_client():
+    """异步 httpx Client：Multi-Agent / astream 路径使用。"""
+    import httpx
+
+    class _MaasNormalizeAsyncTransport(httpx.AsyncHTTPTransport):
+        async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+            response = await super().handle_async_request(request)
+            content_type = (response.headers.get("content-type") or "").lower()
+            if "application/json" not in content_type:
+                return response
+            raw = await response.aread()
+            content, out_ct = _adapt_maas_response(request, response, raw)
+            if content is raw and out_ct is None:
+                return _rebuild_adapted_httpx_response(request, response, raw, "application/json; charset=utf-8")
+            return _rebuild_adapted_httpx_response(request, response, content, out_ct or "application/json; charset=utf-8")
+
+    return httpx.AsyncClient(transport=_MaasNormalizeAsyncTransport(), timeout=120.0)
+
+
 def get_provider_config() -> ProviderConfig:
     """获取当前供应商配置"""
+    from dataclasses import replace
+
     provider_id = get_provider_id()
     config = PROVIDERS.get(provider_id)
     if not config:
         logger.warning(f"Unknown provider '{provider_id}', falling back to 'alibaba'")
         config = PROVIDERS["alibaba"]
+    if provider_id == "alibaba" or config is PROVIDERS["alibaba"]:
+        config = replace(config, base_url=get_alibaba_base_url())
     return config
 
 
@@ -394,6 +614,7 @@ def get_llm_kwargs(
     pid = provider_id or get_provider_id()
     config = PROVIDERS.get(pid) or get_provider_config()
     resolved_key = api_key or get_api_key(pid if provider_id else None)
+    base_url = get_alibaba_base_url() if pid == "alibaba" else config.base_url
 
     if pid == "ollama":
         resolved_key = resolved_key or (os.getenv("OLLAMA_API_KEY") or "ollama")
@@ -415,14 +636,22 @@ def get_llm_kwargs(
         )
         logger.warning(f"{hint} not set! LLM calls will fail.")
 
-    return {
+    kwargs = {
         "api_key": resolved_key or "sk-placeholder",
-        "base_url": config.base_url,
+        "base_url": base_url,
         "model": model or get_current_model(),
         "temperature": temperature,
         "streaming": streaming,
         "max_tokens": 4096,
     }
+    # MaaS 工作区偶发返回简化 JSON；同步/异步客户端都注入（Multi-Agent 走 async）
+    if pid == "alibaba" and _looks_like_maas_workspace_url(base_url):
+        try:
+            kwargs["http_client"] = _build_maas_http_client()
+            kwargs["http_async_client"] = _build_maas_async_http_client()
+        except Exception as e:
+            logger.warning(f"MaaS http_client 适配未启用: {e}")
+    return kwargs
 
 
 def get_chat_llm(

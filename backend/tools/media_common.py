@@ -104,6 +104,13 @@ def _get_provider_api_key(provider: str) -> Optional[str]:
 
 def _get_provider_base_url(provider: str) -> str:
     """根据供应商获取对应的 Base URL"""
+    if provider == "alibaba":
+        raw = (
+            os.getenv("DASHSCOPE_BASE_URL")
+            or os.getenv("ALIBABA_BASE_URL")
+            or "https://dashscope.aliyuncs.com/compatible-mode/v1/"
+        ).strip()
+        return raw if raw.endswith("/") else raw + "/"
     url_map = {
         "zhipu": "https://open.bigmodel.cn/api/paas/v4/",
         "openai": os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1/"),
