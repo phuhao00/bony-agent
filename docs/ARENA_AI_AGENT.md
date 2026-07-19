@@ -61,7 +61,18 @@ SUBJECT ──► LLM 桩(旁白文案) ──► LLM 桩(检索词) ──► e
 | 成片 | 27.67s · 1080×1920 (9:16) · H.264 + AAC · edge-tts 真实人声 · CJK 硬字幕 |
 | 素材模式 | `synthetic`（提示语：配置 PEXELS_API_KEY 可获取真实 B-roll） |
 
-## 6. 接入真实服务（解锁完整能力）
+## 6. 前端 web/ 在沙箱中的分级方案（实测）
+
+| 模式 | ≤2GB 沙箱 | 说明 |
+| --- | --- | --- |
+| 依赖安装 `npm install` | ✅ 21s / 759 包 | 需 `web/.npmrc`（本分支新增）：`react-chat-elements` peer 仅声明 React 18 而项目用 React 19，缺失会 `ERESOLVE` |
+| 开发模式 `next dev` | ✅ **可用** | Turbopack dev：1.5s 就绪，首页 200 正常渲染（`<title>Boni · 波尼</title>`），内存峰值 ≈1.3GB |
+| 生产构建 `next build` | ❌ **不可行** | Turbopack 构建 25 分钟无进展、内存打满 1.9GB 卡死；沙箱无权限开 swap |
+| 生产构建替代 | ✅ CI | 新增 `.github/workflows/web-build.yml`：push/PR 触碰 `web/**` 时在 GitHub runner（≈7GB RAM）执行 `npm ci --legacy-peer-deps` + `next build`，作为合并门槛 |
+
+实战建议：沙箱内开发用 `next dev`（改 `web/.env.local` 指向本地 8000 后端即可联调）；需要生产产物走 CI。
+
+## 7. 接入真实服务（解锁完整能力）
 
 | 配置 | 解锁能力 |
 | --- | --- |
@@ -70,9 +81,9 @@ SUBJECT ──► LLM 桩(旁白文案) ──► LLM 桩(检索词) ──► e
 | `JIMENG_*` / `ARK_API_KEY` / DashScope | 即梦图片、SeaDance/短剧视频、HappyHorse |
 | 平台 Cookie 登录 + Playwright | 14 平台自动发布（沙箱无浏览器，需宿主机/容器外） |
 | Go 1.22+ / Rust toolchain | `backend_massive_concurrent` / `backend_safety` 引擎 |
-| Node 20 + 内存 ≥4GB | `web/` Next.js 前端 |
+| Node 20（构建需 ≥6GB 或走 CI） | `web/` Next.js 前端（详见第 6 节分级方案） |
 
-## 7. 已知限制
+## 8. 已知限制
 
 - 桩 LLM 输出为**固定模板**，只验证链路连通性与真实媒体合成，不代表生成质量。
 - `synthetic` 素材为纯色/渐变画面，仅用于占位验证。
