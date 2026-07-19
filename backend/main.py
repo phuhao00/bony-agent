@@ -2308,7 +2308,17 @@ async def api_hermes_skills_sync(req: HermesSkillSyncRequest):
 async def api_get_provider_config():
     """获取当前 LLM 供应商配置"""
     import asyncio
-    from core.llm_provider import get_provider_id, get_provider_config, get_api_key, get_current_model, get_vision_model, PROVIDERS, fetch_openrouter_models, _OPENROUTER_CACHE
+    from core.llm_provider import (
+        get_provider_id,
+        get_provider_config,
+        get_api_key,
+        get_current_model,
+        get_vision_model,
+        get_alibaba_base_url,
+        PROVIDERS,
+        fetch_openrouter_models,
+        _OPENROUTER_CACHE,
+    )
 
     # 如果缓存为空则在后台异步刷新，不阻塞本次响应
     if not _OPENROUTER_CACHE.get("models"):
@@ -2322,6 +2332,7 @@ async def api_get_provider_config():
             "model": get_current_model(),
             "vision_model": get_vision_model(),
             "has_key": bool(get_api_key()),
+            "base_url": config.base_url,
             "video_provider": os.getenv("VIDEO_PROVIDER", "auto"),
             "audio_provider": os.getenv("AUDIO_PROVIDER", "auto"),
         },
@@ -2335,7 +2346,7 @@ async def api_get_provider_config():
                 "has_key": bool(get_api_key(pid)),
                 # 须含通义「ALIBABA 或 DASHSCOPE」合并结果，供 Next /api/chat 等只读单字段的消费者使用
                 "api_key_value": (get_api_key(pid) or "").strip(),
-                "base_url": p.base_url,
+                "base_url": get_alibaba_base_url() if pid == "alibaba" else p.base_url,
                 "extra_keys": [
                     {
                         "env_var": k,
@@ -2395,6 +2406,8 @@ async def api_update_provider_config(req: ProviderUpdateRequest):
         for p in PROVIDERS.values():
             for k in p.extra_keys or []:
                 valid_env_vars.add(k)
+        # Model Studio / 通义自定义网关地址
+        valid_env_vars.update({"DASHSCOPE_BASE_URL", "ALIBABA_BASE_URL"})
         for env_var, value in req.api_keys.items():
             if env_var not in valid_env_vars:
                 raise HTTPException(status_code=400, detail=f"Unknown env var: {env_var}")
