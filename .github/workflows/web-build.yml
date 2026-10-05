@@ -1,0 +1,48 @@
+name: Web Production Build
+
+# 前端生产构建：web/ 在 ≤2GB 内存的沙箱中无法完成 Turbopack 构建（实测内存耗尽卡死），
+# 交给 GitHub Actions（ubuntu-latest ≈ 7GB RAM）承担生产构建与门槛校验。
+# 沙箱/低内存环境请使用 `next dev`（实测 1.5GB 内存下可正常开发）。
+
+on:
+  push:
+    paths: ["web/**", ".github/workflows/web-build.yml"]
+  pull_request:
+    paths: ["web/**"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # web/.npmrc 已含 legacy-peer-deps=true（react-chat-elements 仅声明 peer React 18
+      # 而项目用 React 19，缺省会 ERESOLVE）。此处显式传参双保险。
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Production build
+        run: npx next build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144"
+          NEXT_TELEMETRY_DISABLED: "1"
+
+      - name: Upload build output (7 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-next-build
+          path: |
+            web/.next/BUILD_ID
+            web/.next/app-path-routes-manifest.json
+            web/.next/build-manifest.json
+          retention-days: 7

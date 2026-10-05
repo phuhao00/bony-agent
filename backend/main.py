@@ -37,23 +37,24 @@ _apply_playwright_fix()
 
 
 def _setup_ffmpeg():
-    """Ensure 'ffmpeg' is resolvable via shutil.which().
+    """Ensure 'ffmpeg' and 'ffprobe' are resolvable via shutil.which().
 
     imageio-ffmpeg bundles a static ffmpeg binary for each platform, but names
     it like 'ffmpeg-macos-aarch64-v7.1' instead of 'ffmpeg'.  We create a
     symlink (or copy on Windows) named 'ffmpeg'/'ffmpeg.exe' inside
     APP_DATA/bin/ — which main.js already prepends to PATH — so that every
     subprocess call using the bare 'ffmpeg' command finds it.
+
+    imageio-ffmpeg 不包含 ffprobe；当其缺失时（容器/CI/Agent 沙箱等精简环境），
+    从 tools/ffprobe_shim.py 安装一个纯标准库兼容垫片，覆盖代码库用到的
+    查询子集（format=duration、stream=width,height）。
     """
     import shutil
-    if shutil.which('ffmpeg'):
+    ffmpeg_ok = bool(shutil.which('ffmpeg'))
+    ffprobe_ok = bool(shutil.which('ffprobe'))
+    if ffmpeg_ok and ffprobe_ok:
         return  # already in PATH (system install or previous run)
     try:
-        import imageio_ffmpeg
-        ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
-        if not os.path.isfile(ffmpeg_exe):
-            return
-
         # APP_DATA is the parent of storage/ (STORAGE_DIR env var set by main.js)
         storage_dir = os.environ.get('STORAGE_DIR', '')
         if storage_dir:
@@ -64,17 +65,35 @@ def _setup_ffmpeg():
 
         os.makedirs(bin_dir, exist_ok=True)
 
-        link_name = 'ffmpeg.exe' if sys.platform == 'win32' else 'ffmpeg'
-        link_path = os.path.join(bin_dir, link_name)
+        if not ffmpeg_ok:
+            import imageio_ffmpeg
+            ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+            if os.path.isfile(ffmpeg_exe):
+                link_name = 'ffmpeg.exe' if sys.platform == 'win32' else 'ffmpeg'
+                link_path = os.path.join(bin_dir, link_name)
 
-        if not os.path.exists(link_path):
-            try:
-                os.symlink(os.path.abspath(ffmpeg_exe), link_path)
-            except (OSError, NotImplementedError):
-                # Windows may require Developer Mode for symlinks — copy instead
-                shutil.copy2(ffmpeg_exe, link_path)
-                if sys.platform != 'win32':
-                    os.chmod(link_path, 0o755)
+                if not os.path.exists(link_path):
+                    try:
+                        os.symlink(os.path.abspath(ffmpeg_exe), link_path)
+                    except (OSError, NotImplementedError):
+                        # Windows may require Developer Mode for symlinks — copy instead
+                        shutil.copy2(ffmpeg_exe, link_path)
+                        if sys.platform != 'win32':
+                            os.chmod(link_path, 0o755)
+
+        # ffprobe 兼容垫片：imageio-ffmpeg 只捆绑 ffmpeg，不含 ffprobe，
+        # 但 auto_video_pipeline / media_common / subtitle_tools 均直接调用
+        # `ffprobe`。缺失时从 tools/ffprobe_shim.py 安装一个纯标准库垫片，
+        # 覆盖代码库用到的 duration / width,height 查询子集（沙箱与精简环境适用）。
+        if not ffprobe_ok and sys.platform != 'win32':
+            shim_src = Path(__file__).parent / 'tools' / 'ffprobe_shim.py'
+            probe_path = os.path.join(bin_dir, 'ffprobe')
+            if shim_src.is_file():
+                try:
+                    shutil.copy2(shim_src, probe_path)
+                    os.chmod(probe_path, 0o755)
+                except OSError:
+                    pass
 
         # Ensure bin_dir is in PATH (redundant when main.js prepends it, but
         # useful when running the backend directly during development)
@@ -82,7 +101,7 @@ def _setup_ffmpeg():
         if bin_dir not in current_path.split(os.pathsep):
             os.environ['PATH'] = bin_dir + os.pathsep + current_path
     except Exception:
-        pass  # Non-fatal: ffmpeg may still be available in system PATH
+        pass  # Non-fatal: ffmpeg/ffprobe may still be available in system PATH
 
 
 _setup_ffmpeg()
